@@ -6,14 +6,16 @@ import numpy as np
 from src.test_utils import get_preprocessed_data, visualize_weights, visualize_loss
 
 
-def softmax(X: np.array) -> np.array:
+def softmax(Z: np.array) -> np.array:
     """
     TODO 1:
     Compute softmax of 2D array along axis -1
-    :param X: 2D array, shape (N, C)
+    :param Z: 2D array, shape (N, C)
     :return: softmax 2D array, shape (N, C)
     """
-    return X
+    exps = np.exp(Z)
+    exps_sum = exps.sum(axis=-1, keepdims=True) # чтобы броадкастинг работал
+    return exps / exps_sum
 
 
 def softmax_loss_and_grad(W: np.array, X: np.array, y: np.array, reg: float) -> tuple:
@@ -29,17 +31,27 @@ def softmax_loss_and_grad(W: np.array, X: np.array, y: np.array, reg: float) -> 
     """
     loss = 0.0
     dL_dW = np.zeros_like(W)
+    N = len(X)
     # *****START OF YOUR CODE*****
     # 1. Forward pass, compute loss as sum of data loss and regularization loss [sum(W ** 2)]
+    Z = np.dot(X, W)
+    S = softmax(Z)
+
+    # reg_loss = np.sum(W ** 2)
+    # ce_loss = -1 * np.sum(y @ np.log(S))
+    # loss = ce_loss - reg_loss * reg
+    loss = - np.log(S[range(N), y]).mean()
+    loss += np.sum(W**2)
 
     # 2. Backward pass, compute intermediate dL/dZ
-
+    dz = S.copy()
+    dz[range(N), y] -=1
     # 3. Compute data gradient dL/dW
-
+    dL_dW = X.T @ dz
+    dL_dW /= N
     # 4. Compute regularization gradient
-
+    dL_dW += (2*W)
     # 5. Return loss and sum of data + reg gradients
-
     # *****END OF YOUR CODE*****
 
     return loss, dL_dW
