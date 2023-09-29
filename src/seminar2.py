@@ -41,16 +41,16 @@ def softmax_loss_and_grad(W: np.array, X: np.array, y: np.array, reg: float) -> 
     # ce_loss = -1 * np.sum(y @ np.log(S))
     # loss = ce_loss - reg_loss * reg
     loss = - np.log(S[range(N), y]).mean()
-    loss += np.sum(W**2)
+    loss += reg * np.sum(W**2)
 
     # 2. Backward pass, compute intermediate dL/dZ
     dz = S.copy()
-    dz[range(N), y] -=1
+    dz[range(N), y] -= 1
     # 3. Compute data gradient dL/dW
     dL_dW = X.T @ dz
     dL_dW /= N
     # 4. Compute regularization gradient
-    dL_dW += (2*W)
+    dL_dW += reg * (2*W)
     # 5. Return loss and sum of data + reg gradients
     # *****END OF YOUR CODE*****
 
@@ -87,7 +87,6 @@ class SoftmaxClassifier:
         # Run stochastic gradient descent to optimize W
         loss_history = []
         for it in range(num_iters):
-            X_batch, y_batch = None, None
             #########################################################################
             # TODO 3:                                                               #
             # Sample batch_size elements from the training data and their           #
@@ -100,7 +99,8 @@ class SoftmaxClassifier:
             # replacement is faster than sampling without replacement.              #
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
+            batch_indices = np.random.choice(num_train, size=batch_size, replace=True)
+            X_batch, y_batch = X[batch_indices, :], y[batch_indices]
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
             # evaluate loss and gradient
@@ -113,7 +113,7 @@ class SoftmaxClassifier:
             # Update the weights using the gradient and the learning rate.          #
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
+            self.W -= learning_rate * grad
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
             if it % 100 == 0:
                 if verbose:
@@ -145,10 +145,10 @@ def train():
     # weights images must look like in lecture slides
 
     # ***** START OF YOUR CODE *****
-    learning_rate = 0
-    reg = 0
-    num_iters = 0
-    batch_size = 0
+    learning_rate = 0.0001
+    reg = 0.1
+    num_iters = 15000
+    batch_size = 64
     # ******* END OF YOUR CODE ************
 
     (x_train, y_train), (x_test, y_test) = get_preprocessed_data()
@@ -187,3 +187,4 @@ Test accuracy: {cls.evaluate(x_test, y_test)}
 
 if __name__ == '__main__':
     train()
+
