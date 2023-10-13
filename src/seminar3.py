@@ -1,6 +1,9 @@
 """Seminar 3. Multilayer neural net"""
-import numpy as np
+import datetime
+import os.path
 
+import numpy as np
+from src.test_utils import get_preprocessed_data, visualize_weights, visualize_loss
 
 class Param:
     """
@@ -113,7 +116,7 @@ class DenseLayer:
 class TwoLayerNet:
     """ Neural network with two fully connected layers """
 
-    def __init__(self, n_input, n_output, hidden_layer_size, reg=0):
+    def __init__(self, n_input, n_output, hidden_layer_size, reg=0.0):
         """
         Initializes the neural network
         Arguments:
@@ -167,7 +170,6 @@ class TwoLayerNet:
 
 
 
-
     def fit(self, X, y, learning_rate=1e-3, num_iters=10000,
             batch_size=4, verbose=True):
         """
@@ -209,8 +211,59 @@ class TwoLayerNet:
         return loss_history
 
 
+    def evaluate(self, X, y):
+        """
+        Use the trained weights of this linear classifier to predict labels for
+        data points and evaluate accuracy.
+        Inputs:
+        - X: A numpy array of shape (N, D) containing training data; there are N
+          training samples each of dimension D.
+        Returns:
+        - y_predicted: Predicted labels for the data in X. y_predicted is a 1-dimensional
+          array of length N, and each element is an integer giving the predicted
+          class.
+        """
+        z = self.forward(X, y)
+        y_predicted = np.argmax(z, axis=1)
+        accuracy = np.mean(y_predicted == y)
+        return accuracy
+
 if __name__ == '__main__':
-    """1 point"""
-    # Train your TwoLayer Net!
-    # Save report to output/seminar3
-    model = TwoLayerNet()
+    (x_train, y_train), (x_test, y_test) = get_preprocessed_data()
+    hidden_layer_size = 64
+    reg = 0.1
+    learning_rate = 1e-3
+    n_input = x_train.shape[1]
+    n_output = 10
+    num_iters = 5000
+    batch_size = 128
+    model = TwoLayerNet(n_input, n_output, hidden_layer_size, reg)
+    t0 = datetime.datetime.now()
+    loss_history = model.fit(x_train, y_train, learning_rate, num_iters, batch_size)
+    t1 = datetime.datetime.now()
+    dt = t1 - t0
+
+    report = f"""# Training Softmax classifier
+    datetime: {t1.isoformat(' ', 'seconds')}
+    Well done in: {dt.seconds} seconds
+    learning_rate = {learning_rate}
+    reg = {reg}
+    num_iters = {num_iters}
+    batch_size = {batch_size}
+
+    Final loss: {loss_history[-1]}
+    Train accuracy: {model.evaluate(x_train, y_train)}   
+    Test accuracy: {model.evaluate(x_test, y_test)}  
+    <img src="weights.png">
+    <br>
+    <img src="loss.png">
+    """
+    print(report)
+
+
+
+    out_dir = '../output/seminar3'
+    report_path = os.path.join(out_dir, 'report.md')
+    with open(report_path, 'w') as f:
+        f.write(report)
+    visualize_loss(loss_history, out_dir)

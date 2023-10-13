@@ -47,7 +47,7 @@ def softmax_loss_and_grad(W: np.array, X: np.array, y: np.array, reg: float) -> 
     dz = S.copy()
     dz[range(N), y] -= 1
     # 3. Compute data gradient dL/dW
-    dL_dW = X.T @ dz
+    dL_dW = X.T @ dz # (D, N) x (N, C) => (D, C)
     dL_dW /= N
     # 4. Compute regularization gradient
     dL_dW += reg * (2*W)
@@ -146,9 +146,9 @@ def train():
 
     # ***** START OF YOUR CODE *****
     learning_rate = 0.0001
-    reg = 0.1
-    num_iters = 15000
-    batch_size = 64
+    reg = 0.3
+    num_iters = 25000
+    batch_size = 128
     # ******* END OF YOUR CODE ************
 
     (x_train, y_train), (x_test, y_test) = get_preprocessed_data()
@@ -187,4 +187,3 @@ Test accuracy: {cls.evaluate(x_test, y_test)}
 
 if __name__ == '__main__':
     train()
-
