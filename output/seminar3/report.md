@@ -1,14 +1,14 @@
 # Training Softmax classifier
-    datetime: 2023-10-14 00:21:41
-    Well done in: 113 seconds
-    learning_rate = 0.001
+    datetime: 2023-10-21 21:47:30
+    Well done in: 210 seconds
+    learning_rate = 0.02
     reg = 0.1
-    num_iters = 5000
+    num_iters = 10000
     batch_size = 128
 
-    Final loss: 0.24444326439872807
-    Train accuracy: 0.16316   
-    Test accuracy: 0.162  
+    Final loss: 2.0707953359331954
+    Train accuracy: 0.38452   
+    Test accuracy: 0.387  
     <img src="weights.png">
     <br>
     <img src="loss.png">

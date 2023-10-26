@@ -51,7 +51,6 @@ class ReLULayer:
 
     def forward(self, X: np.array) -> np.array:
         """
-        TODO: Implement forward pass
         Hint: you'll need to save some information about X
         in the instance variable to use it later in the backward pass
         :param X: input data
@@ -83,7 +82,6 @@ class DenseLayer:
         self.X = None
 
     def forward(self, X):
-        # TODO: Implement forward pass
         # Your implementation shouldn't have any loops
         self.X = X.copy()
         return X @ self.W.value + self.B.value
@@ -101,9 +99,6 @@ class DenseLayer:
         d_result: np array (batch_size, n_input) - gradient
           with respect to input
         """
-        # TODO: Implement backward pass
-        # self.B.grad = np.sum(d_out, axis=0)
-        # self.W.grad = self.X.T @ d_out
         self.W.grad = np.dot(self.X.T, d_out)
         self.B.grad = np.sum(d_out, axis=0, keepdims=True)
 
@@ -143,9 +138,6 @@ class TwoLayerNet:
         """
         Z = X.copy()
 
-        # TODO forward passes through the all model`s layer
-        # Set layer parameters gradient to zeros
-        # After that compute loss and gradients
         for layer in self.layers:
             Z = layer.forward(Z)
             for param in layer.params().values():
@@ -187,12 +179,10 @@ class TwoLayerNet:
         Outputs:
         A list containing the value of the loss function at each training iteration.
         """
-        num_classes = np.max(y) + 1  # assume y takes values 0...K-1 where K is number of classes
-
         # Run stochastic gradient descent to optimize W
         loss_history = []
         for it in range(num_iters):
-            idxs = np.random.choice(num_classes, batch_size)
+            idxs = np.random.choice(X.shape[0], batch_size)
             X_batch, y_batch = X[idxs], y[idxs]
             # evaluate loss and gradient
             self.forward(X_batch, y_batch)
@@ -230,12 +220,12 @@ class TwoLayerNet:
 
 if __name__ == '__main__':
     (x_train, y_train), (x_test, y_test) = get_preprocessed_data()
-    hidden_layer_size = 64
+    hidden_layer_size = 32
     reg = 0.1
-    learning_rate = 1e-3
+    learning_rate = 2e-2
     n_input = x_train.shape[1]
     n_output = 10
-    num_iters = 5000
+    num_iters = 10_000
     batch_size = 128
     model = TwoLayerNet(n_input, n_output, hidden_layer_size, reg)
     t0 = datetime.datetime.now()
