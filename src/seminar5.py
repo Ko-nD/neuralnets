@@ -1,8 +1,6 @@
 """Seminar 5. Convolutional Networks"""
 import tensorflow as tf
 
-from test_utils import get_preprocessed_data
-
 
 def build_conv_layer() -> tf.keras.layers.Conv2D:
     """
@@ -34,14 +32,12 @@ def build_padded_conv_layer(kernel_size) -> tf.keras.layers.Conv2D:
 
 def build_depth_wise_conv_layer() -> tf.keras.layers.DepthwiseConv2D:
     """Build DepthWise Convolution layer """
-    my_layer = tf.keras.layers.DepthwiseConv2D(kernel_size=(3,3), depth_multiplier=2)
+    my_layer = tf.keras.layers.DepthwiseConv2D(kernel_size=(3, 3), depth_multiplier=2)
     return my_layer
 
 
 def build_pooling_layer() -> tf.keras.layers.MaxPooling2D:
     """Build MaxPooling layer with fixed pool and strides"""
-
-    # TODO Create layer with necessary kernel size and strides
     my_layer = tf.keras.layers.MaxPooling2D(strides=2, pool_size=(2, 2))
     return my_layer
 
@@ -106,6 +102,6 @@ def draw_weights(net_path):
 if __name__ == '__main__':
     import numpy as np
     import matplotlib.pyplot as plt
-    NET_PATH = '../models/my_conv_net'
+    NET_PATH = '/models/my_conv_net/'
     train(NET_PATH)
     draw_weights(NET_PATH)
