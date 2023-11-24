@@ -96,12 +96,15 @@ def draw_weights(net_path):
         # w_img = np.moveaxis(w_img, -1, 0)
         plt.imshow(w_img.astype('uint8'))
         plt.axis('off')
-    plt.savefig('../output/seminar5/weights.png')
+    plt.savefig('output/seminar5/weights.png')
 
 
 if __name__ == '__main__':
     import numpy as np
     import matplotlib.pyplot as plt
+    import os
+
+    os.chdir('..')  # костыль
     NET_PATH = '/models/my_conv_net/'
     train(NET_PATH)
     draw_weights(NET_PATH)
