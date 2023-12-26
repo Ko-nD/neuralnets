@@ -14,7 +14,7 @@ import pandas as pd
 import tensorflow as tf
 
 MAX_WORDS = 4000
-MAX_SEQ_LEN = 90
+MAX_SEQ_LEN = 100
 DATA_URL_TRAIN = 'https://storage.yandexcloud.net/fa-bucket/spam.csv'
 DATA_URL_TEST = 'https://storage.yandexcloud.net/fa-bucket/spam_test.csv'
 PATH_TO_TRAIN_DATA = 'data/raw/spam.csv'
@@ -46,7 +46,7 @@ def make_model():
     x = tf.keras.layers.LSTM(units=8)(x)
     x = tf.keras.layers.Dropout(0.2)(x)
     x = tf.keras.layers.Dense(1, name='out_layer')(x)
-    x = tf.keras.layers.Activation('tanh')(x)
+    x = tf.keras.layers.Activation('sigmoid')(x)
 
     recurrent_model = tf.keras.Model(inputs=inputs, outputs=x)
     return recurrent_model
@@ -61,10 +61,9 @@ def load_data(csv_path='data/raw/spam.csv') -> tuple:
 
 def train():
     X_train, Y_train = load_data()
-    X_test, _ = load_data('data/raw/spam_test.csv')
 
     tok = tf.keras.preprocessing.text.Tokenizer(num_words=MAX_WORDS)
-    tok.fit_on_texts(X_test)
+    tok.fit_on_texts(X_train)
     sequences = tok.texts_to_sequences(X_train)
     sequences_matrix = tf.keras.preprocessing.sequence.pad_sequences(sequences, maxlen=MAX_SEQ_LEN)
 
@@ -89,7 +88,7 @@ def train():
         sequences_matrix,
         Y_train,
         batch_size=128,
-        epochs=50,
+        epochs=70,
         validation_split=0.2,
         class_weight=class_weight,
         callbacks=callbacks
@@ -108,7 +107,7 @@ def validate(model_path='models\model_7') -> tuple:
     X_test, Y_test = load_data('data/raw/spam_test.csv')
 
     tok = tf.keras.preprocessing.text.Tokenizer(num_words=MAX_WORDS)
-    tok.fit_on_texts(X_test)
+    tok.fit_on_texts(X_train)
     test_sequences = tok.texts_to_sequences(X_test)
     test_sequences_matrix = tf.keras.preprocessing.sequence.pad_sequences(test_sequences, maxlen=MAX_SEQ_LEN)
 
